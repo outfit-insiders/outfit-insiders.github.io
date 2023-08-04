@@ -30,6 +30,7 @@ import {
   Image,
   Switch,
   useColorMode,
+  IconButton,
 } from "@chakra-ui/react";
 import {
   FaSearch,
@@ -37,6 +38,7 @@ import {
   FaCog,
   FaSignOutAlt,
   FaUpload,
+  FaUsers,
 } from "react-icons/fa";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 
@@ -132,13 +134,9 @@ export default function Navbar() {
         <Spacer />
         <Box pr={3}>
           <HStack spacing={2}>
-            <Button
-              leftIcon={<Icon as={FaUpload} />}
-              size="sm"
-              onClick={handleModalOpen}
-            >
-              Upload
-            </Button>
+            <Link to="/communities">
+              <IconButton icon={<FaUsers />} aria-label="Users" mr={3} />
+            </Link>
             <Menu size="sm">
               <MenuButton as={Avatar} size="sm" cursor="pointer" />
               <MenuList>
@@ -165,69 +163,6 @@ export default function Navbar() {
             </Menu>
           </HStack>
         </Box>
-
-        <Modal size={"sm"} isOpen={isModalOpen} onClose={handleModalClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Upload a post</ModalHeader>
-            <ModalBody>
-              <FormControl mb={4}>
-                <FormLabel>File</FormLabel>
-                <Input p={1} type="file" onChange={handleFileChange} />
-                {previewUrl && <Image src={previewUrl} mt={2} maxH="200px" />}
-              </FormControl>
-              <FormControl mb={4}>
-                <FormLabel>Description</FormLabel>
-                <Textarea
-                  value={description}
-                  onChange={handleDescriptionChange}
-                />
-              </FormControl>
-              <FormControl mb={4}>
-                <FormLabel>Tags</FormLabel>
-                <InputGroup>
-                  <InputLeftElement
-                    pointerEvents="none"
-                    children={<Icon as={FaSearch} color="gray.500" />}
-                  />
-                  <Input
-                    type="text"
-                    placeholder="Add a tag"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleTagAdd(e.currentTarget.value);
-                        e.currentTarget.value = "";
-                      }
-                    }}
-                  />
-                </InputGroup>
-                <Flex flexWrap="wrap" mt={2}>
-                  {tags.map((tag) => (
-                    <Tag
-                      key={tag}
-                      mr={2}
-                      mb={2}
-                      size="md"
-                      variant="solid"
-                      colorScheme="blue"
-                    >
-                      <TagLabel>{tag}</TagLabel>
-                      <TagCloseButton onClick={() => handleTagRemove(tag)} />
-                    </Tag>
-                  ))}
-                </Flex>
-              </FormControl>
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="blue" mr={3} onClick={handleModalClose}>
-                Cancel
-              </Button>
-              <Button colorScheme="green" onClick={handleModalClose}>
-                Upload
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
       </HStack>
       <Outlet />
     </>

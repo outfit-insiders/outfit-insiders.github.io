@@ -1,28 +1,33 @@
 import {
   Box,
   Flex,
-  Heading,
   Image,
-  Text,
   IconButton,
-  Spacer,
-  Badge,
+  Button,
+  useColorModeValue,
+  Icon,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  FormControl,
+  FormLabel,
+  Textarea,
+  Tag,
+  TagLabel,
+  TagCloseButton,
+  Input,
+  Checkbox,
+  useToast,
+  InputLeftElement,
+  InputGroup,
 } from "@chakra-ui/react";
-import { FaHeart } from "react-icons/fa";
-import { Link } from "react-router-dom";
-
-interface Post {
-  id: number;
-  imageUrl: string;
-  title: string;
-  date: string;
-  description: string;
-  college: string;
-}
-
-interface FeedProps {
-  posts: Post[];
-}
+// import { v4 as uuidv4 } from "uuid";
+import { useState } from "react";
+import { FaHeart, FaPlusCircle, FaSearch, FaUpload } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
 const srces = [
   "https://sothebys-com.brightspotcdn.com/74/34/543925cf4281ba9fe0b774e76c85/gettyimages-1316606580.jpg",
@@ -35,6 +40,47 @@ const srces = [
 ];
 
 export default function Feed() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [description, setDescription] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      setFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleDescriptionChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setDescription(e.target.value);
+  };
+
+  const handleTagAdd = (tag: string) => {
+    setTags([...tags, tag]);
+  };
+
+  const handleTagRemove = (tag: string) => {
+    setTags(tags.filter((t) => t !== tag));
+  };
+
+  const handleModalOpen = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setFile(null);
+    setDescription("");
+    setTags([]);
+    setPreviewUrl(null);
+  };
+
   return (
     <Box
       w="100%"
@@ -55,24 +101,80 @@ export default function Feed() {
           />
         </Link>
       ))}
+
+      {/* add post button */}
+
+      <Modal size={"sm"} isOpen={isModalOpen} onClose={handleModalClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Upload a post</ModalHeader>
+          <ModalBody>
+            <FormControl mb={4}>
+              <FormLabel>File</FormLabel>
+              <Input p={1} type="file" onChange={handleFileChange} />
+              {previewUrl && <Image src={previewUrl} mt={2} maxH="200px" />}
+            </FormControl>
+            <FormControl mb={4}>
+              <FormLabel>Description</FormLabel>
+              <Textarea
+                value={description}
+                onChange={handleDescriptionChange}
+              />
+            </FormControl>
+            <FormControl mb={4}>
+              <FormLabel>Tags</FormLabel>
+              <InputGroup>
+                <InputLeftElement
+                  pointerEvents="none"
+                  children={<Icon as={FaSearch} color="gray.500" />}
+                />
+                <Input
+                  type="text"
+                  placeholder="Add a tag"
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleTagAdd(e.currentTarget.value);
+                      e.currentTarget.value = "";
+                    }
+                  }}
+                />
+              </InputGroup>
+              <Flex flexWrap="wrap" mt={2}>
+                {tags.map((tag) => (
+                  <Tag
+                    key={tag}
+                    mr={2}
+                    mb={2}
+                    size="md"
+                    variant="solid"
+                    colorScheme="blue"
+                  >
+                    <TagLabel>{tag}</TagLabel>
+                    <TagCloseButton onClick={() => handleTagRemove(tag)} />
+                  </Tag>
+                ))}
+              </Flex>
+            </FormControl>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleModalClose}>
+              Cancel
+            </Button>
+            <Button colorScheme="green" onClick={handleModalClose}>
+              Upload
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Add post button */}
+      <Box position="fixed" bottom={4} right={4} zIndex={11}>
+        <IconButton
+          aria-label="Upload"
+          icon={<FaUpload />}
+          onClick={handleModalOpen}
+        />
+      </Box>
     </Box>
   );
-}
-
-{
-  /* {posts.map((post) => (
-        <Box key={post.id} bg="white" boxShadow="md" p={4} mb={4} maxW="600px" mx="auto">
-          <Flex alignItems="center">
-            <Image src={post.imageUrl} alt={post.title} boxSize="300px" objectFit="cover" mr={4} />
-            <Box>
-              <Heading size="md" mb={2}>{post.title}</Heading>
-              <Text fontSize="sm" color="gray.500" mb={2}>{post.date}</Text>
-              <Text fontSize="md">{post.description}</Text>
-              <Badge colorScheme="green" mt={2}>{post.college}</Badge>
-            </Box>
-            <Spacer />
-            <IconButton aria-label="Like" icon={<FaHeart />} />
-          </Flex>
-        </Box>
-      ))} */
 }

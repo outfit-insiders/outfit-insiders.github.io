@@ -18,10 +18,24 @@ import {
   Textarea,
   Badge,
   useToast,
+  Slider,
+  SliderTrack,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderMark,
 } from "@chakra-ui/react";
 
 export default function Profile() {
   // Variables ----------------------------------------------------------------------
+
+  const [sliderValue, setSliderValue] = useState(50);
+  const [sliderValue2, setSliderValue2] = useState(50);
+
+  const labelStyles = {
+    mt: "2",
+    ml: "-2.5",
+    fontSize: "sm",
+  };
 
   // set up state variables for the name modal and user name input fields
   const [showNameModal, setShowNameModal] = useState(false);
@@ -129,6 +143,79 @@ export default function Profile() {
             setPerson((prev) => ({ ...prev, biography: e.target.value }))
           }
         />
+
+        <Box p={2}>
+          <Text fontSize="xl" fontWeight="bold">
+            What is your inseam?
+          </Text>
+          <br />
+          <Slider
+            w={["90vw", "40vw"]}
+            aria-label="slider-ex-6"
+            onChange={(val) => setSliderValue(val)}
+          >
+            <SliderMark value={31} {...labelStyles}>
+              26
+            </SliderMark>
+            <SliderMark value={50.5} {...labelStyles}>
+              30
+            </SliderMark>
+            <SliderMark value={70} {...labelStyles}>
+              34
+            </SliderMark>
+            <SliderMark
+              value={sliderValue}
+              textAlign="center"
+              bg="blue.500"
+              color="white"
+              mt="-10"
+              ml="-5"
+              w="12"
+            >
+              {sliderValue / 5 + 20}
+            </SliderMark>
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb />
+          </Slider>
+        </Box>
+
+        <Box p={2}>
+          <Text fontSize="xl" fontWeight="bold">
+            How tall are you?
+          </Text>
+          <br />
+          <Slider
+            w={["90vw", "40vw"]}
+            aria-label="slider-ex-6"
+            onChange={(val) => setSliderValue2(val)}
+          >
+            <SliderMark value={40} {...labelStyles}>
+              3ft 6in
+            </SliderMark>
+            <SliderMark value={60.5} {...labelStyles}>
+              5ft
+            </SliderMark>
+            <SliderMark value={75} {...labelStyles}>
+              6ft 5in
+            </SliderMark>
+            <SliderMark
+              value={sliderValue2}
+              textAlign="center"
+              bg="blue.500"
+              color="white"
+              mt="-10"
+              ml="-5"
+            >
+              {Math.floor(sliderValue2/12) + "ft " +  sliderValue2%12 + "in"}
+            </SliderMark>
+            <SliderTrack>
+              <SliderFilledTrack />
+            </SliderTrack>
+            <SliderThumb />
+          </Slider>
+        </Box>
       </Box>
     </Stack>
   );
